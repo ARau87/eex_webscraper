@@ -1,0 +1,3 @@
+# Ignore the config file as it contains sensible data
+config.txt
+*.json

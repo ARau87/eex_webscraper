@@ -1,0 +1,10 @@
+driver = firefox
+driver_executable = ./driver/geckodriver
+save_path = ./data
+os = linux
+time = 00:15
+email_server=
+email_server_port =
+email_user=
+email_password=
+email_receiver=

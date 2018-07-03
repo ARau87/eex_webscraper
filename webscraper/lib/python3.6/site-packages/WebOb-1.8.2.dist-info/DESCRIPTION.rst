@@ -1,0 +1,154 @@
+WebOb
+=====
+
+.. image:: https://travis-ci.org/Pylons/webob.png?branch=master
+        :target: https://travis-ci.org/Pylons/webob
+
+.. image:: https://readthedocs.org/projects/webob/badge/?version=stable
+        :target: https://docs.pylonsproject.org/projects/webob/en/stable/
+        :alt: Documentation Status
+
+WebOb provides objects for HTTP requests and responses.  Specifically
+it does this by wrapping the `WSGI <http://wsgi.readthedocs.io/en/latest/>`_ request
+environment and response status/headers/app_iter(body).
+
+The request and response objects provide many conveniences for parsing
+HTTP request and forming HTTP responses.  Both objects are read/write:
+as a result, WebOb is also a nice way to create HTTP requests and
+parse HTTP responses.
+
+Support and Documentation
+-------------------------
+
+See the `WebOb Documentation website <https://docs.pylonsproject.org/projects/webob/en/stable/>`_ to view
+documentation, report bugs, and obtain support.
+
+License
+-------
+
+WebOb is offered under the `MIT-license
+<https://docs.pylonsproject.org/projects/webob/en/stable/license.html>`_.
+
+Authors
+-------
+
+WebOb was authored by Ian Bicking and is currently maintained by the `Pylons
+Project <https://pylonsproject.org/>`_ and a team of contributors.
+
+1.8.2 (2018-06-05)
+------------------
+
+Bugfix
+~~~~~~
+
+- SameSite may now be passed as str or bytes to `Response.set_cookie` and
+  `cookies.make_cookie`. This was an oversight as all other arguments would be
+  correctly coerced before being serialized. See
+  https://github.com/Pylons/webob/issues/361 and
+  https://github.com/Pylons/webob/pull/362
+
+
+1.8.1 (2018-04-10)
+------------------
+
+Bugfix
+~~~~~~
+
+- acceptparse.MIMEAccept which is deprecated in WebOb 1.8.0 made a backwards
+  incompatible change that led to it raising on an invalid Accept header. This
+  behaviour has now been reversed, as well as some other fixes to allow
+  MIMEAccept to behave more like the old version. See
+  https://github.com/Pylons/webob/pull/356
+
+
+1.8.0 (2018-04-04)
+------------------
+
+Feature
+~~~~~~~
+
+- ``request.POST`` now supports any requests with the appropriate
+  Content-Type. Allowing any HTTP method to access form encoded content,
+  including DELETE, PUT, and others. See
+  https://github.com/Pylons/webob/pull/352
+
+Compatibility
+~~~~~~~~~~~~~
+
+- WebOb is no longer officially supported on Python 3.3 which was EOL'ed on
+  2017-09-29.
+
+Backwards Incompatibilities
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Many changes have been made to the way WebOb does Accept handling, not just
+  for the Accept header itself, but also for Accept-Charset, Accept-Encoding
+  and Accept-Language. This was a `Google Summer of Code
+  <https://developers.google.com/open-source/gsoc/>`_ project completed by
+  Whiteroses (https://github.com/whiteroses). Many thanks to Google for running
+  GSoC, the Python Software Foundation for organising and a huge thanks to Ira
+  for completing the work. See https://github.com/Pylons/webob/pull/338 and
+  https://github.com/Pylons/webob/pull/335. Documentation is available at
+  https://docs.pylonsproject.org/projects/webob/en/master/api/webob.html
+
+- When calling a ``@wsgify`` decorated function, the default arguments passed
+  to ``@wsgify`` are now used when called with the request, and not as a
+  `start_response`
+
+  .. code::
+
+     def hello(req, name):
+         return "Hello, %s!" % name
+     app = wsgify(hello, args=("Fred",))
+
+     req = Request.blank('/')
+     resp = req.get_response(app)  # => "Hello, Fred"
+     resp2 = app(req) # => "Hello, Fred"
+
+  Previously the ``resp2`` line would have failed with a ``TypeError``. With
+  this change there is no way to override the default arguments with no
+  arguments. See https://github.com/Pylons/webob/pull/203
+
+- When setting ``app_iter`` on a ``Response`` object the ``content_md5`` header
+  is no longer cleared. This behaviour is odd and disallows setting the
+  ``content_md5`` and then returning an iterator for chunked content encoded
+  responses. See https://github.com/Pylons/webob/issues/86
+
+Experimental Features
+~~~~~~~~~~~~~~~~~~~~~
+
+These features are experimental and may change at any point in the future.
+
+- The cookie APIs now have the ability to set the SameSite attribute on a
+  cookie in both ``webob.cookies.make_cookie`` and
+  ``webob.cookies.CookieProfile``. See https://github.com/Pylons/webob/pull/255
+
+Bugfix
+~~~~~~
+
+- Exceptions now use string.Template.safe_substitute rather than
+  string.Template.substitute. The latter would raise for missing mappings, the
+  former will simply not substitute the missing variable. This is safer in case
+  the WSGI environ does not contain the keys necessary for the body template.
+  See https://github.com/Pylons/webob/issues/345.
+
+- Request.host_url, Request.host_port, Request.domain correctly parse IPv6 Host
+  headers as provided by a browser. See
+  https://github.com/Pylons/webob/pull/332
+
+- Request.authorization would raise ValueError for unusual or malformed header
+  values. See https://github.com/Pylons/webob/issues/231
+
+- Allow unnamed fields in form data to be properly transcoded when calling
+  request.decode with an alternate encoding. See
+  https://github.com/Pylons/webob/pull/309
+
+- ``Response.__init__`` would discard ``app_iter`` when a ``Response`` had no
+  body, this would cause issues when ``app_iter`` was an object that was tied
+  to the life-cycle of a web application and had to be properly closed.
+  ``app_iter`` is more advanced API for ``Response`` and thus even if it
+  contains a body and is thus against the HTTP RFC's, we should let the users
+  shoot themselves by returning a body. See
+  https://github.com/Pylons/webob/issues/305
+
+

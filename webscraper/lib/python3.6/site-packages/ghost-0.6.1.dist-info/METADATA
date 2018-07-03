@@ -1,0 +1,42 @@
+Metadata-Version: 2.0
+Name: ghost
+Version: 0.6.1
+Summary: Ghost stores your secrets where no one can see
+Home-page: https://github.com/nir0s/ghost
+Author: nir0s
+Author-email: nir36g@gmail.com
+License: LICENSE
+Platform: All
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Natural Language :: English
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: click (>=6.7)
+Requires-Dist: tinydb (>=3.2.2)
+Requires-Dist: cryptography (>=1.5.0)
+Provides-Extra: consul
+Requires-Dist: requests (>=2.11.1); extra == 'consul'
+Provides-Extra: elasticsearch
+Requires-Dist: elasticsearch (>=2.4.0); extra == 'elasticsearch'
+Provides-Extra: sqlalchemy
+Requires-Dist: sqlalchemy (>=1.0.15); extra == 'sqlalchemy'
+Requires-Dist: sqlalchemy-utils (>=0.32.14); extra == 'sqlalchemy'
+Provides-Extra: vault
+Requires-Dist: hvac (>=0.2.16); extra == 'vault'
+
+ghost
+=====
+
+See `Official Github Repo <https://github.com/nir0s/ghost>`_.
+
