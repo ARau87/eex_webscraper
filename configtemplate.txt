@@ -8,3 +8,4 @@ email_server_port =
 email_user=
 email_password=
 email_receiver=
+weather_api_key=

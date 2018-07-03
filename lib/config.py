@@ -46,6 +46,9 @@ class Config():
                 if option[0] == 'email_receiver':
                     self.email_receiver = option[1]
 
+                if option[0] == 'weather_api_key':
+                    self.weather_api_key = option[1]
+
     def print_options(self):
 
         print('Driver:', self.driver)
