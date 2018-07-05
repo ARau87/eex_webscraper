@@ -29,7 +29,7 @@ def create_driver(config):
             options = Options()
             #options.add_argument("--headless")
             driver = webdriver.Firefox(executable_path=config.driver_executable, firefox_options=options)
-            driver.implicitly_wait(15)
+            driver.implicitly_wait(20)
             return driver
 
       if config.driver == 'chrome':
@@ -64,7 +64,7 @@ def save_weather_data(data, config):
       t = time.strftime('%H%M')
       d = time.time()
       d = time.strftime('%d%m%Y')
-      filename = data[0] + '_weather_' + t 
+      filename = data[0] + '_weather_' + t + '.json'
       if os.path.isdir(config.save_path + '/' + data[0]):
             if os.path.isdir(config.save_path + '/' + data[0] + '/' + d):
                   with open(config.save_path + '/' + data[0] + '/' + d + '/' + filename, 'w') as file:
@@ -106,11 +106,21 @@ def delete_old_data(dirname):
       
 
 def job_weather(config):
-      save_weather_data(load_weather_data('Muenchen', config), config)
-      save_weather_data(load_weather_data('Essen', config), config)
-      save_weather_data(load_weather_data('Berlin', config), config)
+      try:
+            t = time.time()
+            t = time.strftime('%H:%M')
+            print('Job Weather:', t)
+            save_weather_data(load_weather_data('Muenchen', config), config)
+            save_weather_data(load_weather_data('Essen', config), config)
+            save_weather_data(load_weather_data('Berlin', config), config)
+      except:
+            time.sleep(2)
+            job_weather(config)
 
 def job_main(config):
+      t = time.time()
+      t = time.strftime('%H:%M')
+      print('Job Main:', t)
       email_sender = EmailSender(config)
       driver = create_driver(config)
 
@@ -129,14 +139,37 @@ def job_main(config):
       # it may be the case the weather ran before
       job_weather(config)
 
+def run_at(hour, minutes, config):
+      print('Run at:', str(hour), ':', str(minutes))
+
+      try:
+            schedule.every().hour.do(job_weather, config)
+            schedule.every().day.at(str(hour) + ':' + str(minutes)).do(job_main, config)
+            while True:
+                  schedule.run_pending()
+                  time.sleep(60)
+      except:
+            run_mins = minutes + 10
+            run_hour = hour
+            if run_mins > 60:
+                  run_mins = config.time.split(':')[1]
+                  run_mins = int(run_mins)
+                  run_hour = hour + 1
+                  if run_hour == 24:
+                        run_hour = 0
+            run_at(run_hour, run_mins, config)
+
 
 if __name__ == '__main__':
- 
-  config = Config('config.txt')
-  config.print_options()
-  schedule.every().hour.do(job_weather, config)
-  schedule.every().day.at(config.time).do(job_main, config)
+      config = Config('config.txt')
+      config.print_options()
 
-  while True:
-        schedule.run_pending()
-        time.sleep(60)
+      job_weather(config)
+      run_mins = config.time.split(':')[1]
+      run_mins = int(run_mins)
+      run_hour = config.time.split(':')[0]
+      run_hour = int(run_hour)
+      
+      run_at(run_hour, run_mins, config)
+                  
+

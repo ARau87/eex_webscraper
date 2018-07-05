@@ -55,7 +55,9 @@ class EmailSender(object):
                 server.close()
                 print('successfully sent the mail')
         except:
-            print("failed to send mail")
+            print("failed to send mail. Try it again:")
+            self.send(files)
+
 
         
 
