@@ -82,7 +82,7 @@ def save_data(data, config):
       if data[0] == 'planned':
             t = time.strftime('%H%M_%d%m%Y')
       if data[0] == 'actual':
-            d = time.strftime('%d')-1
+            d = int(time.strftime('%d')) -1
             t = time.strftime('%H%M_' + str(d) +'%m%Y')
       filename = config.save_path + '/' + data[0] + '_' + t + '.json'
       with open(filename, 'w') as file:
